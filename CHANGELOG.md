@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/argilzar/export-parquet/compare/v1.2.2...v1.2.3) (2025-09-02)
+
+
+### Bug Fixes
+
+* **export-parquet:** :bug: update descriptions for filename and outputDir flags ([f95003a](https://github.com/argilzar/export-parquet/commit/f95003a3218d1d0b094fbe9dfa635bcb7a36c5b0))
+
 ## [1.2.2](https://github.com/argilzar/export-parquet/compare/v1.2.1...v1.2.2) (2025-09-02)
 
 
