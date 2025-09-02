@@ -33,6 +33,6 @@ jobs:
         run: 'echo "version ${{ steps.package.outputs.value }}"'
       - uses: google-github-actions/release-please-action@v3
         with:
-          token: ${{ secrets.FLOWCORE_MACHINE_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           release-type: node
           package-name: ${{ steps.package.outputs.value }}
