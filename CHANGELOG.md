@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/argilzar/export-parquet/compare/v1.0.0...v1.0.1) (2025-09-02)
+
+
+### Bug Fixes
+
+* Deploy ([d891eff](https://github.com/argilzar/export-parquet/commit/d891effa766e578a653ee2cb1340df83f7c934f0))
+
 ## 1.0.0 (2025-09-02)
 
 
