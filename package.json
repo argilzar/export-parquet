@@ -88,7 +88,7 @@
     "version": "oclif readme && git add README.md",
     "update-schema": "rover graph introspect https://graph.api.flowcore.io/graphql -o schema.gql"
   },
-  "version": "1.2.4",
+  "version": "1.2.5",
   "bugs": "https://github.com/argilzar/export-parquet/issues",
   "keywords": [
     "oclif",
