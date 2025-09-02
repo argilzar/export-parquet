@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/argilzar/export-parquet/compare/v1.2.0...v1.2.1) (2025-09-02)
+
+
+### Bug Fixes
+
+* New version ([22c9487](https://github.com/argilzar/export-parquet/commit/22c9487af0608e0c7fe101c8de7c53f5f9343c15))
+
 ## [1.2.0](https://github.com/argilzar/export-parquet/compare/v1.1.0...v1.2.0) (2025-09-02)
 
 
