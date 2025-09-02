@@ -8,6 +8,8 @@
     "target": "es2022",
     "moduleResolution": "node16",
     "baseUrl": ".",
+    "lib": ["es2022"],
+    "skipLibCheck": true,
     "paths": {
       "@/*": [
         "src/*"

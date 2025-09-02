@@ -289,6 +289,10 @@ export class ExportParquetService implements OutputService {
 			return convertedValue;
 		}
 
+		if (columnType === "JSON") {
+			return JSON.stringify(value);
+		}
+
 		// For other types or when conversion is not needed, return the value as is
 		return value;
 	}

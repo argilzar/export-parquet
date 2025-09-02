@@ -3,6 +3,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  pull-requests: write
+
 env:
   NODE_VERSION: ">=18.12.1"
 

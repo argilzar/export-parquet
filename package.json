@@ -73,6 +73,7 @@
   },
   "repository": "flowcore-io/export-parquet",
   "scripts": {
+    "dev": "bun run build --watch",
     "build": "shx rm -rf dist && tsc -b",
     "lint": "eslint . --ext .ts",
     "postpack": "shx rm -f oclif.manifest.json",
@@ -83,7 +84,7 @@
     "version": "oclif readme && git add README.md",
     "update-schema": "rover graph introspect https://graph.api.flowcore.io/graphql -o schema.gql"
   },
-  "version": "2.14.0",
+  "version": "1.0.0",
   "bugs": "https://github.com/flowcore-io/export-parquet/issues",
   "keywords": [
     "oclif"
