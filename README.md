@@ -1,303 +1,223 @@
-Flowcore CLI Plugin - Export Parquet
-=================
+# Flowcore CLI Plugin - Export Parquet
 
-Plugin to export data from the flowcore platform as parquet files
+Plugin to export data from the flowcore platform as parquet files using DuckDB via the modern `@duckdb/node-api` package for efficient data processing and storage.
 
-[![Version](https://img.shields.io/npm/v/@flowcore/flowcore-cli-plugin-scenario)](https://npmjs.org/package/@flowcore/flowcore-cli-plugin-scenario)
+[![Version](https://img.shields.io/npm/v/@argilzar/cli-plugin-export-parquet)](https://npmjs.org/package/@argilzar/cli-plugin-export-parquet)
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Build and Release](https://github.com/@flowcore/flowcore-cli-plugin-scenario/actions/workflows/build.yml/badge.svg)](https://github.com/@flowcore/flowcore-cli-plugin-scenario/actions/workflows/build.yml)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+- [Flowcore CLI Plugin - Export Parquet](#flowcore-cli-plugin---export-parquet)
+  - [Overview](#overview)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Basic Usage](#basic-usage)
+    - [Custom Filename with CLI Flag](#custom-filename-with-cli-flag)
+    - [Custom Filename (Programmatic)](#custom-filename-programmatic)
+    - [Programmatic Usage](#programmatic-usage)
+  - [Commands](#commands)
+    - [`export-parquet <STREAM>`](#export-parquet-stream)
+  - [Features](#features)
+  - [How It Works](#how-it-works)
+  - [Output](#output)
+  - [Requirements](#requirements)
+  - [Dependencies](#dependencies)
+  - [Development](#development)
+  - [Architecture](#architecture)
+  - [License](#license)
 <!-- tocstop -->
-# Usage
-<!-- usage -->
-```sh-session
-$ npm install -g @flowcore/cli-plugin-scenario
-$ scenario COMMAND
-running command...
-$ scenario (--version)
-@flowcore/cli-plugin-scenario/2.11.0 darwin-arm64 node-v20.15.0
-$ scenario --help [COMMAND]
-USAGE
-  $ scenario COMMAND
-...
-```
-<!-- usagestop -->
-# Commands
-<!-- commands -->
-* [`scenario get adapter [ADAPTER]`](#scenario-get-adapter-adapter)
-* [`scenario get scenario [SCENARIO]`](#scenario-get-scenario-scenario)
-* [`scenario get scenario copy [SCENARIO]`](#scenario-get-scenario-copy-scenario)
-* [`scenario logs adapter ADAPTER`](#scenario-logs-adapter-adapter)
-* [`scenario reset adapter ADAPTER`](#scenario-reset-adapter-adapter)
-* [`scenario scenario apply`](#scenario-scenario-apply)
-* [`scenario scenario generate manifest`](#scenario-scenario-generate-manifest)
-* [`scenario scenario generate transformer`](#scenario-scenario-generate-transformer)
-* [`scenario scenario local`](#scenario-scenario-local)
 
-## `scenario get adapter [ADAPTER]`
+## Overview
 
-Get adapter
+The Export Parquet plugin for Flowcore CLI allows you to stream data from Flowcore data cores and export it directly to Parquet files. It uses DuckDB via the modern `@duckdb/node-api` package for in-memory data processing, making it efficient for handling large volumes of streaming data.
 
-```
-USAGE
-  $ scenario get adapter [ADAPTER] -t <value> -s <value> [--profile <value>]
+## Installation
 
-ARGUMENTS
-  ADAPTER  adapter name or id
-
-FLAGS
-  -s, --scenario=<value>  (required) scenario
-  -t, --tenant=<value>    (required) tenant
-      --profile=<value>   Specify the configuration profile to use
-
-DESCRIPTION
-  Get adapter
-
-EXAMPLES
-  $ scenario get adapter -t tenant-name -s scenario-name
-
-  $ scenario get adapter adapter-name -t tenant-name -s scenario-name
+```bash
+npm install -g @argilzar/cli-plugin-export-parquet
 ```
 
-_See code: [src/commands/get/adapter.ts](https://github.com/flowcore/flowcore-cli-plugin-scenario/blob/v2.11.0/src/commands/get/adapter.ts)_
+## Usage
 
-## `scenario get scenario [SCENARIO]`
-
-Get scenario
-
-```
-USAGE
-  $ scenario get scenario [SCENARIO] -t <value> [--profile <value>]
-
-ARGUMENTS
-  SCENARIO  scenario name
-
-FLAGS
-  -t, --tenant=<value>   (required) tenant
-      --profile=<value>  Specify the configuration profile to use
-
-DESCRIPTION
-  Get scenario
-
-EXAMPLES
-  $ scenario get scenario -t tenant-name
-
-  $ scenario get scenario scenario-name -t tenant-name
+### Basic Usage
+```bash
+# Export with default timestamped filename
+flowcore export-parquet "https://flowcore.io/<org>/<Data Core>/*" -s 1y --no-live
 ```
 
-_See code: [src/commands/get/scenario.ts](https://github.com/flowcore/flowcore-cli-plugin-scenario/blob/v2.11.0/src/commands/get/scenario.ts)_
+### Custom Filename with CLI Flag
+```bash
+# Export with custom filename (extension automatically added)
+flowcore export-parquet "https://flowcore.io/<org>/<Data Core>/*" -s 1y --no-live --filename brian
 
-## `scenario get scenario copy [SCENARIO]`
+# Export with custom filename (extension already included)
+flowcore export-parquet "https://flowcore.io/<org>/<Data Core>/*" -s 1y --no-live --filename brian.parquet
 
-Get scenario
+# Using short flag
+flowcore export-parquet "https://flowcore.io/<org>/<Data Core>/*" -s 1y --no-live -f brian
 
-```
-USAGE
-  $ scenario get scenario copy [SCENARIO] -t <value> [--profile <value>]
+# Export with custom output directory
+flowcore export-parquet "https://flowcore.io/<org>/<Data Core>/*" -s 1y --no-live --output-dir /path/to/exports
 
-ARGUMENTS
-  SCENARIO  scenario name or id
+# Export with custom filename and output directory
+flowcore export-parquet "https://flowcore.io/<org>/<Data Core>/*" -s 1y --no-live --filename brian --output-dir /path/to/exports
 
-FLAGS
-  -t, --tenant=<value>   (required) tenant
-      --profile=<value>  Specify the configuration profile to use
-
-DESCRIPTION
-  Get scenario
-
-EXAMPLES
-  $ scenario get scenario copy -t tenant-name
-
-  $ scenario get scenario copy scenario-name -t tenant-name
+# Using short flags
+flowcore export-parquet "https://flowcore.io/<org>/<Data Core>/*" -s 1y --no-live -f brian -o /path/to/exports
 ```
 
-_See code: [src/commands/get/scenario copy.ts](https://github.com/flowcore/flowcore-cli-plugin-scenario/blob/v2.11.0/src/commands/get/scenario copy.ts)_
-
-## `scenario logs adapter ADAPTER`
-
-Get adapter logs
-
-```
-USAGE
-  $ scenario logs adapter ADAPTER -t <value> -s <value> [--profile <value>] [-f] [-l <value>] [-j] [-a]
-
-ARGUMENTS
-  ADAPTER  adapter name or id
-
-FLAGS
-  -a, --allComponents     display logs for all components of the adapter, including Flowcore components
-  -f, --follow            follow
-  -j, --json              json
-  -l, --limit=<value>     [default: 1000] limit
-  -s, --scenario=<value>  (required) scenario
-  -t, --tenant=<value>    (required) tenant
-      --profile=<value>   Specify the configuration profile to use
-
-DESCRIPTION
-  Get adapter logs
-
-EXAMPLES
-  $ scenario logs adapter adapter-name -t tenant-name -s scenario-name
-
-  $ scenario logs adapter adapter-name -t tenant-name -s scenario-name -f
-
-  $ scenario logs adapter adapter-name -t tenant-name -s scenario-name -l 100
-
-  $ scenario logs adapter adapter-name -t tenant-name -s scenario-name --json
+### Custom Filename (Programmatic)
+```typescript
+// Create service with custom filename
+const exportService = new ExportParquetService(logger, "my-custom-export.parquet");
 ```
 
-_See code: [src/commands/logs/adapter.ts](https://github.com/flowcore/flowcore-cli-plugin-scenario/blob/v2.11.0/src/commands/logs/adapter.ts)_
+### Programmatic Usage
+```typescript
+import { ExportParquetService } from "@flowcore/cli-plugin-export-parquet";
 
-## `scenario reset adapter ADAPTER`
+// With default filename (timestamped) and default output directory
+const service = new ExportParquetService(logger);
 
-Reset a adapter
+// With custom filename (extension automatically added) and default output directory
+const service = new ExportParquetService(logger, "my-export");
 
-```
-USAGE
-  $ scenario reset adapter ADAPTER -s <value> -t <value> [--profile <value>] [-b <value>] [-e <value>]
+// With custom filename (extension already included) and default output directory
+const service = new ExportParquetService(logger, "my-export.parquet");
 
-ARGUMENTS
-  ADAPTER  adapter name or id
+// With custom filename and custom output directory
+const service = new ExportParquetService(logger, "my-export", "/path/to/exports");
 
-FLAGS
-  -b, --bucket=<value>    time bucket
-  -e, --eventId=<value>   time uuid
-  -s, --scenario=<value>  (required) scenario
-  -t, --tenant=<value>    (required) tenant
-      --profile=<value>   Specify the configuration profile to use
-
-DESCRIPTION
-  Reset a adapter
-
-EXAMPLES
-  $ scenario reset adapter adapter-name -t tenant-name -s scenario-name -b 20240718110000
-
-  $ scenario reset adapter adapter-name -t tenant-name -s scenario-name -e 9cb35da2-ba64-4bb5-86d6-ef20ebc62ab7
+// With default filename and custom output directory
+const service = new ExportParquetService(logger, undefined, "/path/to/exports");
 ```
 
-_See code: [src/commands/reset/adapter.ts](https://github.com/flowcore/flowcore-cli-plugin-scenario/blob/v2.11.0/src/commands/reset/adapter.ts)_
+**Note**: The `.parquet` extension is automatically added if not provided. Both `"my-export"` and `"my-export.parquet"` will result in the same filename.
 
-## `scenario scenario apply`
+## Commands
 
-Apply a manifest configuration for a Scenario to the Flowcore Platform
+### `export-parquet <STREAM>`
 
-```
-USAGE
-  $ scenario scenario apply -f <value> [--profile <value>] [-d] [-n <value>] [-t <value>] [-y]
+Export data from a Flowcore stream as parquet files.
 
-FLAGS
-  -d, --[no-]deploy      deploy the scenario after applying
-  -f, --file=<value>...  (required) file to apply
-  -n, --name=<value>     name of the scenario to apply
-  -t, --tenant=<value>   tenant to apply the scenario to, this is the org for your organization, it can be seen in the
-                         url when accessing your organization
-  -y, --yes              skip confirmation
-      --profile=<value>  Specify the configuration profile to use
+**Arguments:**
+- `STREAM` - The stream URL in the format `https://flowcore.io/<org>/<Data Core>/*`
 
-DESCRIPTION
-  Apply a manifest configuration for a Scenario to the Flowcore Platform
+**Flags:**
+- `-s, --start=<value>` - Start time for the export (e.g., "1y", "2024-01-01")
+- `-e, --end=<value>` - End time for the export (e.g., "2024-12-31")
+- `--live` - Enable live streaming (continuous export)
+- `--no-live` - Disable live streaming (one-time export)
+- `-f, --filename=<value>` - Custom filename for the parquet export (`.parquet` extension automatically added)
+- `-o, --output-dir=<value>` - Custom output directory for the parquet file (default: `./exports`)
 
-EXAMPLES
-  $ scenario scenario apply -t flowcore -f example.yaml
+**Examples:**
+```bash
+# Export last year's data
+export-parquet "https://flowcore.io/myorg/mydatacore/*" -s 1y --no-live
 
-  $ scenario scenario apply -t flowcore -n scenario-name -f example.yaml
+# Export specific date range
+export-parquet "https://flowcore.io/myorg/mydatacore/*" -s 2024-01-01 -e 2024-12-31 --no-live
 
-  $ cat <<EOF | scenario scenario apply -f -
-```
-
-_See code: [src/commands/scenario/apply.ts](https://github.com/flowcore/flowcore-cli-plugin-scenario/blob/v2.11.0/src/commands/scenario/apply.ts)_
-
-## `scenario scenario generate manifest`
-
-Generate a scenario manifest
-
-```
-USAGE
-  $ scenario scenario generate manifest -t <value> [--profile <value>] [-f <value>] [-n <value>] [-o] [--placeholder]
-
-FLAGS
-  -f, --file=<value>     file to apply
-  -n, --name=<value>     name of the scenario to generate
-  -o, --overwrite        overwrite the existing scenario
-  -t, --tenant=<value>   (required) tenant to apply the scenario to, this is the org for your organization, it can be
-                         seen in the url when accessing your organization
-      --placeholder      generate a placeholder manifest
-      --profile=<value>  Specify the configuration profile to use
-
-DESCRIPTION
-  Generate a scenario manifest
-
-EXAMPLES
-  $ scenario scenario generate manifest -t flowcore
-
-  $ scenario scenario generate manifest -t flowcore --placeholder
-
-  $ scenario scenario generate manifest -t flowcore -f example.yaml
-
-  $ scenario scenario generate manifest -t flowcore -n scenario-name -f example.yaml
+# Live streaming export
+export-parquet "https://flowcore.io/myorg/mydatacore/*" --live
 ```
 
-_See code: [src/commands/scenario/generate/manifest.ts](https://github.com/flowcore/flowcore-cli-plugin-scenario/blob/v2.11.0/src/commands/scenario/generate/manifest.ts)_
+## Features
 
-## `scenario scenario generate transformer`
+- **Modern DuckDB Integration**: Uses `@duckdb/node-api` for the latest DuckDB features and performance
+- **Streaming Support**: Handles both batch and live streaming data
+- **Intelligent Schema Detection**: Automatically analyzes payload structures and creates appropriately typed columns
+- **Dynamic Schema Evolution**: Automatically adds new columns as payload structures are discovered
+- **Native Data Type Preservation**: Stores values in their native types (numbers, booleans, timestamps) instead of JSON strings
+- **Proper Timestamp Handling**: Correctly handles ISO 8601 datetime strings without conversion errors
+- **Unix Timestamp Detection**: Automatically detects Unix timestamps in numeric values and creates TIMESTAMP columns
+- **Automatic Unix Timestamp Conversion**: Converts Unix timestamps to ISO 8601 strings before inserting into DuckDB
+- **Intelligent Type Memory**: Remembers detected column types and only performs conversions when necessary
+- **Custom Filename Support**: Allows specifying custom filenames for parquet exports
+- **Custom Output Directory**: Allows specifying custom output directories for parquet files
+- **Timestamped Output**: Generates timestamped parquet files
+- **Progress Tracking**: Shows progress during export operations
+- **Error Handling**: Robust error handling with detailed logging
 
-add a transformer to a scenario manifest
+## How It Works
 
+1. **Initialization**: The service initializes an in-memory DuckDB database using `@duckdb/node-api`
+2. **Streaming**: As events arrive, they are processed and stored in DuckDB
+3. **Dynamic Schema**: The service automatically analyzes payload structures and creates new columns with appropriate data types
+4. **Type Memory**: Column types are stored in memory for efficient future reference
+5. **Data Processing**: Each event stores flowcore metadata in a single JSON field and spreads payload fields as individually typed columns
+6. **Type Preservation**: Values are stored in their native types (e.g., numbers as numbers, not quoted strings)
+7. **Smart Timestamp Detection**: Automatically detects both string-based and numeric Unix timestamps
+8. **Conditional Conversion**: Unix timestamps are only converted when the column type requires it
+9. **Export**: When the stream completes, data is exported to a timestamped parquet file
+10. **Cleanup**: Database connections are properly closed
+
+## Output
+
+- **Location**: Files are saved to the `./exports/` directory by default, or to a custom directory if specified
+- **Naming**: Files follow the pattern `events_YYYY-MM-DDTHH-MM-SS-sssZ.parquet` by default
+- **Custom Filenames**: Can be customized by passing a filename parameter to the service constructor
+- **Custom Output Directories**: Can be customized by passing an outputDir parameter to the service constructor
+- **Format**: Standard Parquet format for optimal compression and query performance
+- **Structure**: Each row contains:
+  - **`flowcore`** (JSON): Complete SourceEvent metadata excluding payload:
+    - `eventId`: Unique event identifier
+    - `dataCoreId`: Data core ID
+    - `flowType`: Flow type name
+    - `eventType`: Event type name
+    - `timeBucket`: Time bucket for the event
+    - `metadata`: Event metadata
+    - `validTime`: Event validity timestamp
+  - **Payload Fields** (auto-discovered with intelligent typing):
+    - **Numeric Fields**: `BIGINT` for integers, `DOUBLE` for decimals (stored as native numbers)
+    - **String Fields**: `VARCHAR` for text data (stored as native strings)
+    - **DateTime Fields**: `TIMESTAMP` for date/time strings and Unix timestamps (stored as native timestamps)
+    - **Boolean Fields**: `BOOLEAN` for true/false values (stored as native booleans)
+    - **Complex Fields**: `JSON` for objects and arrays (stored as JSON strings)
+    - **Unix Timestamp Detection**: Automatically detects numeric Unix timestamps (10, 13, or 16 digits) and creates TIMESTAMP columns
+    - **Unix Timestamp Conversion**: Converts Unix timestamps to ISO 8601 strings before insertion to ensure proper DuckDB compatibility
+    - **Type Memory System**: Remembers detected column types to avoid unnecessary conversions on subsequent events
+    - Field names match exactly as they appear in the payload
+    - These fields are automatically created with appropriate types as they are discovered in the event stream
+    - **No Double Quotes**: Numeric, boolean, and timestamp values are stored without quotes, preserving their native types
+
+## Requirements
+
+- Node.js >= 18.0.0
+- Flowcore CLI with proper authentication
+- Access to the target data core
+
+## Dependencies
+
+- **@duckdb/node-api**: Modern Node.js API for DuckDB database operations
+- **@flowcore/cli-plugin-core**: Core Flowcore CLI functionality
+- **@flowcore/cli-plugin-config**: Configuration management
+
+## Development
+
+```bash
+# Install dependencies
+yarn install
+
+# Build the project
+yarn build
+
+# Run tests
+yarn test
+
+# Run linter
+yarn lint
 ```
-USAGE
-  $ scenario scenario generate transformer [--profile <value>] [-d <value>] [-f <value>] [-n <value>]
 
-FLAGS
-  -d, --description=<value>  description of the transformer
-  -f, --file=<value>         file to modify
-  -n, --name=<value>         name of the transformer to generate
-      --profile=<value>      Specify the configuration profile to use
+## Architecture
 
-DESCRIPTION
-  add a transformer to a scenario manifest
+The plugin consists of:
 
-EXAMPLES
-  $ scenario scenario generate transformer -n flow-type-name
+- **ExportParquetService**: Core service implementing the OutputService interface
+- **DuckDB Integration**: In-memory database using `@duckdb/node-api` for data processing
+- **Stream Processing**: Handles the Flowcore event stream lifecycle
+- **Parquet Export**: Converts processed data to parquet format
 
-  $ scenario scenario generate transformer -n flow-type-name -d "description of the transformer"
+## License
 
-  $ scenario scenario generate transformer -n flow-type-name -d "description of the transformer" -f example.yaml
-```
-
-_See code: [src/commands/scenario/generate/transformer.ts](https://github.com/flowcore/flowcore-cli-plugin-scenario/blob/v2.11.0/src/commands/scenario/generate/transformer.ts)_
-
-## `scenario scenario local`
-
-Spin up local stream threads based on a scenario manifest
-
-```
-USAGE
-  $ scenario scenario local -e <value> -f <value> [--profile <value>] [-H <value>] [-m http] [-c] [-s <value>] [-t
-    <value>] [-y]
-
-FLAGS
-  -H, --header=<value>...  [default: ] header to send with the request, example: (-H 'Authorization: Bearer TOKEN')
-  -c, --scan               Scan the full time range
-  -e, --endpoint=<value>   (required) stream endpoint
-  -f, --file=<value>...    (required) file to apply
-  -m, --mode=<option>      [default: http] stream mode
-                           <options: http>
-  -s, --start=<value>      Start time bucket to stream from, example: (1y, 1m, 1w, 1d, 1h, now)
-  -t, --timeout=<value>    [default: 5000] Timeout in milliseconds to wait for a response from the destination
-  -y, --yes                skip confirmation
-      --profile=<value>    Specify the configuration profile to use
-
-DESCRIPTION
-  Spin up local stream threads based on a scenario manifest
-
-EXAMPLES
-  $ scenario scenario local -f example.yaml
-
-  $ cat <<EOF | scenario scenario local -f -
-```
-
-_See code: [src/commands/scenario/local.ts](https://github.com/flowcore/flowcore-cli-plugin-scenario/blob/v2.11.0/src/commands/scenario/local.ts)_
-<!-- commandsstop -->
+MIT

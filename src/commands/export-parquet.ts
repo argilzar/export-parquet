@@ -1,9 +1,14 @@
 // src/commands/export-parquet.ts
 
-import { BaseStreamCommand, STREAM_ARGS } from "@flowcore/cli-plugin-core";
+import {
+	BaseStreamCommand,
+	STREAM_ARGS,
+	STREAM_FLAGS,
+} from "@flowcore/cli-plugin-core";
 import pkg from "dayjs";
 const { extend } = pkg;
 
+import { Flags } from "@oclif/core";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
 
 import { ExportParquetService } from "../services/export-parquet.service.js";
@@ -21,13 +26,31 @@ export default class ExportParquetStream extends BaseStreamCommand<
 	];
 
 	static flags = {
-		// add flags to the command to pass to the output processor
+		...STREAM_FLAGS,
+		filename: Flags.string({
+			char: "f",
+			description: "Name of the parquet file",
+			helpValue: "events",
+			name: "filename",
+			required: false,
+		}),
+		outputDir: Flags.string({
+			char: "o",
+			description: "Output directory for the parquet file",
+			helpValue: "./exports",
+			name: "outputDir",
+			required: false,
+		}),
 	};
 
 	public async run(): Promise<void> {
 		const { args, flags } = await this.parse(ExportParquetStream);
 
-		const exportParquetService = new ExportParquetService(this.logger);
+		const exportParquetService = new ExportParquetService(
+			this.logger,
+			flags.filename,
+			flags.outputDir,
+		);
 
 		// register the export parquet service as an output processor
 		this.newStreamService.registerOutputProcessor(exportParquetService);
