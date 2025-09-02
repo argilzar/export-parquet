@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/argilzar/export-parquet/compare/v1.2.1...v1.2.2) (2025-09-02)
+
+
+### Bug Fixes
+
+* **package:** :link: update homepage and bugs URLs to correct repository ([c5091dc](https://github.com/argilzar/export-parquet/commit/c5091dc01bf514531ef732df59a46bbc1d000265))
+
 ## [1.2.1](https://github.com/argilzar/export-parquet/compare/v1.2.0...v1.2.1) (2025-09-02)
 
 
