@@ -1,0 +1,672 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+scalar JSON
+type Adapter {
+  id: ID!
+  name: String!
+  description: String
+  adapterType: AdapterType!
+  adapterSize: AdapterSize!
+  dataCoreId: String!
+  flowtypeId: String!
+  eventType: String!
+  configuration: JSON!
+  readModelId: String @deprecated(reason: "Use endpointId instead")
+  endpointId: String
+  endpointType: String
+  state: AdapterState
+  dataPumpVersion: String
+  coordinatorVersion: String
+  logs(search: AdapterLogQueryInput): AdapterLogResult
+  configurationRepo: String
+}
+type AdapterKubernetesState {
+  adapterType: String!
+  dataCoreId: String!
+  flowtypeId: String!
+  eventType: String!
+  status: AdapterDeploymentStatus!
+  configuration: JSON
+  endpointId: String
+  endpointType: String
+}
+type AdapterLogEntry {
+  timestamp: String!
+  message: String!
+  level: String!
+}
+type AdapterLogResult {
+  cursor: Int
+  entries: [AdapterLogEntry]!
+}
+type AdapterMutation {
+  id: ID!
+  update(input: UpdateAdapterInput): Adapter
+  stop(reason: String): Boolean
+  start(reason: String): Boolean
+  reset(input: ResetAdapterInput!): Boolean
+  requestDelete: Boolean
+}
+type AdapterState {
+  kubernetes: AdapterKubernetesState
+}
+type Datacore {
+  id: ID!
+  name: String!
+  description: String
+  dataDensity: DatacoreDensity!
+  isPublic: Boolean!
+  subscription: ID
+  organization: Organization
+  deleting: Boolean
+  truncating: Boolean
+  configuration: [DataCoreConfiguration]
+  flowtypes(search: FlowtypeQueryInput): [Flowtype!]
+  fetchEvents(input: FetchEventsInput): SourceEventPage
+  fetchIndexes(input: FetchIndexesInput): IndexesPage
+}
+type DataCoreConfiguration {
+  key: DatacoreConfigurationKey!
+  value: String!
+}
+type DatacoreLink {
+  datacore: Datacore
+  organization: Organization
+}
+type DatacoreLinkPage {
+  links: [DatacoreLink]!
+  offset: Int
+  limit: Int!
+  hasMore: Boolean!
+}
+type DatacoreMutation {
+  id: ID!
+  update(input: UpdateDatacoreInput): Datacore
+  subscribe: String
+  unsubscribe(subscriptionId: ID!): Boolean
+  requestDelete: Datacore
+  createFlowtype(input: CreateFlowtypeInput!): String
+  deleteFlowtype(id: ID!): Boolean
+  flowtype(id: ID!): FlowtypeMutation
+}
+type EventType {
+  id: ID!
+  name: String!
+  description: String
+  catalog: EventTypeCatalog
+  deleting: Boolean
+  truncating: Boolean
+  configuration: [EventTypeConfiguration]
+  fetchEvents(input: FetchEventsByEventTypeInput): SourceEventPage
+  fetchIndexes(input: FetchIndexesByEventTypeInput): IndexesPage
+}
+type EventTypeCatalog {
+  range: EventTypeCatalogRange
+  events: [EventTypeCatalogEventEntry]
+}
+type EventTypeCatalogEventEntry {
+  eventId: String
+  serializedPayload: String
+}
+type EventTypeCatalogRange {
+  firstTimeBucket: String
+  lastTimeBucket: String
+}
+type EventTypeConfiguration {
+  key: EventTypeConfigurationKey!
+  value: String!
+}
+type EventTypeMutation {
+  update(input: UpdateEventTypeInput!): EventType!
+  requestDelete: EventType!
+  delete: Boolean!
+}
+type Flowtype {
+  id: ID!
+  events: [EventType!]
+  name: String!
+  description: String
+  aggregator: String!
+  deleting: Boolean
+  truncating: Boolean
+  configuration: [FlowtypeConfiguration]
+  fetchEvents(input: FlowTypeFetchEventsInput): SourceEventPage
+  fetchIndexes(input: FlowTypeFetchIndexesInput): IndexesPage
+}
+type FlowtypeConfiguration {
+  key: FlowtypeConfigurationKey!
+  value: String!
+}
+type FlowtypeMutation {
+  id: ID!
+  createEventType(input: CreateEventTypeInput!): String
+  update(input: UpdateFlowtypeInput!): Flowtype
+  requestDelete: Flowtype
+}
+type IndexesPage {
+  timeBuckets: [String!]!
+  cursor: String
+}
+type Mutation {
+  adapter(id: ID!): AdapterMutation
+  datacore(id: ID!): DatacoreMutation
+  eventType(id: ID!): EventTypeMutation!
+  organization(id: ID!): OrganizationMutation!
+  readModel(id: ID!): ReadModelMutation
+  user: UserMutation!
+}
+type Organization {
+  id: ID!
+  adapters(search: AdapterQueryInput): [Adapter]
+  datacores(search: DatacoreQueryInput): [Datacore]
+  org: String!
+  displayName: String
+  description: String
+  website: String
+  state: OrganizationState
+  users: [UserLink!]
+  variables: [Variable!]
+  readModels(search: ReadModelQueryInput): [ReadModel]
+  scenarios: [Scenario]
+  apiKeys: [OrganizationApiKey]
+  validateApiKey(apiKey: String!): Boolean!
+  secrets: [String!]
+  subscription: OrganizationSubscription
+}
+type OrganizationApiKey {
+  id: ID!
+  name: String!
+  createdAt: String!
+}
+type OrganizationEventSourceState {
+  name: String!
+  keyspace: String!
+  state: OrganizationEventSourceStateType!
+  ingestionVersion: String
+  eventSourceVersion: String
+}
+type OrganizationGitState {
+  repositorySlug: String!
+  cloneUrl: String!
+  state: OrganizationGitStateType!
+}
+type OrganizationKubernetesState {
+  namespace: String!
+  configPath: String!
+  state: OrganizationKubernetesStateType!
+  webhookId: String!
+}
+type OrganizationLink {
+  linkType: OrganizationLinkType!
+  organization: Organization!
+}
+type OrganizationLinkEdge {
+  organization: Organization!
+  user: [User!]!
+}
+type OrganizationLinkPage {
+  edges: [OrganizationLinkEdge!]!
+  offset: Int
+  limit: Int!
+  hasMore: Boolean!
+}
+type OrganizationMutation {
+  id: ID!
+  createAdapter(input: CreateAdapterInput): String
+  createDatacore(input: CreateDatacoreInput): String
+  deleteDataCore(input: DeleteDataCoreInput!): Boolean
+  update(input: UpdateOrganizationInput!): Organization
+  removeUser(userId: ID!): Boolean
+  addUser(input: AddUserToOrganizationInput!): Boolean
+  createVariable(key: String!, value: String!): Boolean
+  updateVariable(key: String!, value: String!): Boolean
+  removeVariable(key: String!): Boolean
+  createReadModel(input: CreateReadModelInput!): String
+  deleteReadModel(input: DeleteReadModelInput!): Boolean
+  createScenario(input: CreateScenarioInput!): String
+  deleteScenario(scenarioId: ID!): Boolean!
+  updateScenario(input: UpdateScenarioInput!): Boolean!
+  deployScenario(scenarioId: ID!): Boolean!
+  createApiKey(name: String!): String!
+  deleteApiKey(id: ID!): Boolean!
+  updateSecret(key: String!, value: String!): Boolean
+  createSecret(key: String!, value: String!): Boolean
+  removeSecret(key: String!): Boolean
+}
+type OrganizationState {
+  repository: OrganizationGitState
+  kubernetes: OrganizationKubernetesState
+  eventSource: OrganizationEventSourceState
+}
+type OrganizationSubscription {
+  id: ID!
+  type: OrganizationSubscriptionType!
+  frequency: String!
+  providerSubscriptionId: String!
+  customerId: String!
+  status: SubscriptionStatus
+}
+type Query {
+  adapter(search: AdapterQueryInput!): Adapter
+  datacore(search: DatacoreQueryInput!): Datacore
+  availableDatacores(search: Pagination): DatacoreLinkPage
+  publicDatacores(search: Pagination): DatacoreLinkPage
+  eventType(id: ID!): EventType!
+  flowtype(id: ID!): Flowtype
+  organization(search: OrganizationQueryInput): Organization
+  getAllOrganizations(search: Pagination): OrganizationLinkPage!
+  readModel(id: ID!): ReadModel
+  scenario(id: ID!): Scenario
+  organizationApiKeys(organizationId: ID!): [OrganizationApiKey]!
+  subscription(id: ID!): OrganizationSubscription!
+  user(id: ID!): User
+  me: User!
+}
+type ReadModel {
+  id: ID!
+  name: String!
+  description: String
+  type: ReadModelType!
+  configuration: String
+  state: ReadModelState
+  content: JSON
+}
+type ReadModelKubernetesState {
+  type: String!
+  status: ReadModelDeploymentStatus!
+  region: String!
+  properties: JSON
+}
+type ReadModelMutation {
+  id: ID!
+  update(input: UpdateReadModelInput!): ReadModel
+}
+type ReadModelState {
+  kubernetes: ReadModelKubernetesState
+}
+type Scenario {
+  id: ID!
+  name: String!
+  description: String!
+  flowcoreUserId: String!
+  organizationId: String!
+  nodes: [ScenarioNode]
+  lastDeployed: String
+  deploymentState: DeploymentScenarioState!
+  createdAt: String!
+  updatedAt: String!
+}
+type ScenarioNode {
+  id: ID!
+  type: ScenarioNodeType!
+  name: String!
+  description: String!
+  parents: [String]!
+  children: [String]!
+  data: JSON!
+}
+type SourceEvent {
+  eventId: String!
+  dataCore: String!
+  aggregator: String!
+  eventType: String!
+  timeBucket: String!
+  metadata: JSON!
+  payload: JSON!
+  validTime: String!
+}
+type SourceEventPage {
+  events: [SourceEvent!]!
+  cursor: String
+}
+type SubscriptionAddon {
+  id: String!
+  quantity: Int!
+  unit: Float!
+  amount: Float!
+}
+type SubscriptionLimit {
+  used: Int!
+  included: Int
+  unit: String
+}
+type SubscriptionStatus {
+  publicDatacores: SubscriptionLimit
+  privateDatacores: SubscriptionLimit
+  adapters: SubscriptionLimit
+  readModels: SubscriptionLimit
+  storage: SubscriptionLimit
+  collaborators: SubscriptionLimit
+  webhookIngestion: SubscriptionLimit
+  addons: [SubscriptionAddon]
+}
+type User {
+  id: ID!
+  datacores: [Datacore]
+  organizations(search: OrganizationQueryInput): [OrganizationLink!]
+  username: String!
+  email: String!
+  firstName: String
+  lastName: String
+}
+type UserLink {
+  user: User!
+  linkType: OrganizationLinkType!
+}
+type UserMutation {
+  id: ID!
+  createOrganization(input: CreateOrganizationInput!): String
+}
+type Variable {
+  key: String!
+  value: String!
+}
+enum AdapterDeploymentStatus {
+  CREATED
+  UPDATED
+  INITIALIZING
+  READY
+  DELETED
+}
+enum AdapterLogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+  FATAL
+}
+enum AdapterSize {
+  SMALL
+  MEDIUM
+  LARGE
+  XLARGE
+}
+enum AdapterType {
+  STRAND
+  CSV
+}
+enum DatacoreConfigurationKey {
+  DELETE_PROTECTION_ENABLED
+}
+enum DatacoreDensity {
+  YEAR
+  MONTH
+  DAY
+  HOUR
+  MINUTE
+  SECOND
+}
+enum DeploymentScenarioState {
+  NOT_DEPLOYED
+  DEPLOYED
+  PARTIALLY_DEPLOYED
+  DELETING
+}
+enum EventTypeConfigurationKey {
+  DELETE_PROTECTION_ENABLED
+}
+enum FlowtypeConfigurationKey {
+  DELETE_PROTECTION_ENABLED
+}
+enum OrganizationEventSourceStateType {
+  ADDED
+  INITIALIZING
+  READY
+  DELETED
+}
+enum OrganizationGitStateType {
+  CREATED
+  DELETED
+}
+enum OrganizationKubernetesStateType {
+  CREATED
+  DELETED
+}
+enum OrganizationLinkType {
+  OWNER
+  COLLABORATOR
+}
+enum OrganizationSubscriptionType {
+  FREE
+  PRO
+  TEAM
+  BIG
+  BASIC
+  STANDARD
+  ADVANCED
+}
+enum ReadModelDeploymentStatus {
+  CREATED
+  INITIALIZING
+  READY
+  DELETED
+}
+enum ReadModelType {
+  CUSTOM
+  STRAND
+  S3
+}
+enum ScenarioNodeType {
+  DATA_CORE
+  ADAPTER
+  READ_MODEL
+}
+input AdapterLogQueryInput {
+  after: String
+  cursor: Int
+  limit: Int
+  level: [AdapterLogLevel]
+}
+input AdapterQueryInput {
+  id: ID
+  name: String
+  organizationId: ID
+}
+input AddUserToOrganizationInput {
+  userId: ID!
+  linkType: OrganizationLinkType!
+}
+input CreateAdapterInput {
+  name: String!
+  description: String
+  adapterType: String!
+  dataCoreId: String!
+  flowtypeId: String!
+  eventType: String!
+  configuration: JSON!
+  endpointId: String
+  endpointType: String
+  adapterSize: String
+  dataPumpVersion: String
+  coordinatorVersion: String
+}
+input CreateDatacoreInput {
+  name: String!
+  description: String
+  dataDensity: DatacoreDensity
+  isPublic: Boolean
+  isEncrypted: Boolean
+  configuration: [DataCoreConfigurationInput]
+}
+input CreateEventTypeInput {
+  name: String!
+  description: String
+  configuration: [EventTypeConfigurationInput]
+}
+input CreateFlowtypeInput {
+  name: String!
+  description: String
+  aggregator: String!
+  configuration: [FlowtypeConfigurationInput]
+}
+input CreateOrganizationInput {
+  org: String!
+  displayName: String
+}
+input CreateReadModelInput {
+  name: String!
+  description: String
+  type: ReadModelType!
+  configuration: JSON
+}
+input CreateScenarioInput {
+  name: String!
+  description: String!
+  flowcoreUserId: String!
+  nodes: [ScenarioNodeInput]
+}
+input DataCoreConfigurationInput {
+  key: DatacoreConfigurationKey!
+  value: String!
+}
+input DatacoreQueryInput {
+  id: ID
+  name: String
+  organizationId: ID
+}
+input DeleteDataCoreInput {
+  id: ID!
+}
+input DeleteReadModelInput {
+  id: ID!
+}
+input EventTypeConfigurationInput {
+  key: EventTypeConfigurationKey!
+  value: String!
+}
+input FetchEventsByEventTypeInput {
+  timeBucket: String!
+  afterEventId: String
+  includeAfterEventId: Boolean
+  beforeEventId: String
+  includeBeforeEventId: Boolean
+  pageSize: Int
+  cursor: String
+  sortOrder: String
+}
+input FetchEventsInput {
+  aggregator: String!
+  eventTypes: [String!]!
+  timeBucket: String!
+  afterEventId: String
+  includeAfterEventId: Boolean
+  beforeEventId: String
+  includeBeforeEventId: Boolean
+  pageSize: Int
+  cursor: String
+}
+input FetchIndexesByEventTypeInput {
+  fromTimeBucket: String
+  toTimeBucket: String
+  pageSize: Int
+  cursor: String
+  sortOrder: String
+}
+input FetchIndexesInput {
+  aggregator: String!
+  eventType: String!
+  fromTimeBucket: String
+  toTimeBucket: String
+  pageSize: Int
+  cursor: String
+  sortOrder: String
+}
+input FlowtypeConfigurationInput {
+  key: FlowtypeConfigurationKey!
+  value: String!
+}
+input FlowTypeFetchEventsInput {
+  eventTypes: [String!]!
+  timeBucket: String!
+  afterEventId: String
+  includeAfterEventId: Boolean
+  beforeEventId: String
+  includeBeforeEventId: Boolean
+  pageSize: Int
+  cursor: String
+}
+input FlowTypeFetchIndexesInput {
+  eventType: String!
+  fromTimeBucket: String
+  toTimeBucket: String
+  pageSize: Int
+  cursor: String
+  sortOrder: String
+}
+input FlowtypeQueryInput {
+  id: ID
+  name: String
+  aggregator: String
+}
+input OrganizationQueryInput {
+  id: ID
+  org: String
+}
+input Pagination {
+  offset: Int
+  limit: Int
+}
+input ReadModelQueryInput {
+  id: ID
+  name: ID
+  type: ReadModelType
+}
+input ResetAdapterInput {
+  timeBucket: String
+  afterEventId: String
+}
+input ScenarioNodeInput {
+  nodeId: ID!
+  type: ScenarioNodeType!
+  name: String!
+  description: String!
+  parents: [String]!
+  children: [String]!
+  data: JSON!
+}
+input UpdateAdapterInput {
+  name: String
+  description: String
+  configuration: JSON
+  adapterSize: String
+  dataPumpVersion: String
+  coordinatorVersion: String
+}
+input UpdateDatacoreInput {
+  description: String
+  deleting: Boolean
+  truncating: Boolean
+  configuration: [DataCoreConfigurationInput]
+}
+input UpdateEventTypeInput {
+  description: String
+  configuration: [EventTypeConfigurationInput]
+}
+input UpdateFlowtypeInput {
+  name: String
+  description: String
+  configuration: [FlowtypeConfigurationInput]
+}
+input UpdateOrganizationInput {
+  displayName: String
+  description: String
+  website: String
+}
+input UpdateReadModelInput {
+  name: String
+  description: String
+  configuration: JSON
+}
+input UpdateScenarioInput {
+  id: ID!
+  name: String
+  description: String
+  nodes: [ScenarioNodeInput]
+}
+"Exposes a URL that specifies the behavior of this scalar."
+directive @specifiedBy(
+    "The URL that specifies the behavior of this scalar."
+    url: String!
+  ) on SCALAR

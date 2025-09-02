@@ -1,0 +1,93 @@
+{
+  "author": "flowcore-platform",
+  "bin": {
+    "emojify": "./bin/run.js",
+    "export-parquet": "./bin/run.js"
+  },
+  "dependencies": {
+    "@flowcore/cli-plugin-config": "^2.2.1",
+    "@flowcore/cli-plugin-core": "^5.7.0",
+    "@oclif/core": "^4.0.21",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-plugins": "^5.4.7",
+    "dayjs": "^1.11.10",
+    "deepmerge": "^4.3.1",
+    "enquirer": "^2.4.1",
+    "graphql": "^16.8.1",
+    "graphql-request": "^6.1.0",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
+  },
+  "description": "Plugin to export data from the flowcore platform as parquet files",
+  "devDependencies": {
+    "@oclif/prettier-config": "^0.2.1",
+    "@oclif/test": "^4.0.9",
+    "@types/chai": "^4",
+    "@types/deepmerge": "^2.2.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/lodash": "^4.14.202",
+    "@types/mocha": "^10",
+    "@types/node": "^18",
+    "@types/uuid": "^9.0.8",
+    "chai": "^4",
+    "eslint": "^8",
+    "eslint-config-oclif": "^5",
+    "eslint-config-oclif-typescript": "^3",
+    "eslint-config-prettier": "^9.1.0",
+    "mocha": "^10",
+    "oclif": "^4.4.12",
+    "shx": "^0.3.4",
+    "ts-node": "^10.9.2",
+    "typescript": "5^"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "/bin",
+    "/dist",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/flowcore-io/export-parquet",
+  "license": "MIT",
+  "main": "",
+  "name": "@argilzar/cli-plugin-export-parquet",
+  "oclif": {
+    "bin": "topic",
+    "dirname": "topic",
+    "commands": "./dist/commands",
+    "devPlugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins",
+      "@flowcore/cli-plugin-config"
+    ],
+    "topicSeparator": " ",
+    "topics": {
+      "topic": {
+        "description": "Plugin to export data from the flowcore platform as parquet files"
+      }
+    }
+  },
+  "repository": "flowcore-io/export-parquet",
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b",
+    "lint": "eslint . --ext .ts",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "posttest": "yarn run lint",
+    "prepack": "yarn run build && oclif manifest && oclif readme",
+    "prepare": "yarn run build",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif readme && git add README.md",
+    "update-schema": "rover graph introspect https://graph.api.flowcore.io/graphql -o schema.gql"
+  },
+  "version": "2.13.0",
+  "bugs": "https://github.com/flowcore-io/export-parquet/issues",
+  "keywords": [
+    "oclif"
+  ],
+  "types": "dist/index.d.ts",
+  "exports": "./dist/index.js",
+  "type": "module"
+}

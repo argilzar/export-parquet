@@ -1,0 +1,38 @@
+on:
+  push:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: ">=18.12.1"
+
+name: release-please
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Extract package name from package.json
+        uses: sergeysova/jq-action@v2
+        id: package
+        with:
+          cmd: 'jq .name package.json -r'
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.6.0
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+          registry-url: "https://registry.npmjs.org"
+          cache: yarn
+      - name: Yarn install
+        run: |
+          yarn install --frozen-lockfile
+      - name: Update Readme
+        run: yarn oclif readme
+
+      - name: Show package name
+        run: 'echo "version ${{ steps.package.outputs.value }}"'
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          token: ${{ secrets.FLOWCORE_MACHINE_GITHUB_TOKEN }}
+          release-type: node
+          package-name: ${{ steps.package.outputs.value }}
