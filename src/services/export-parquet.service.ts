@@ -42,7 +42,7 @@ export class ExportParquetService implements OutputService {
 	async done(): Promise<void> {
 		try {
 			if (!this.connection || !this.db) {
-				this.logger.error("Database not initialized");
+				this.logger.error("DuckDB database not initialized");
 				return;
 			}
 
