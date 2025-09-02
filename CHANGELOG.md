@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/argilzar/export-parquet/compare/v1.1.0...v1.2.0) (2025-09-02)
+
+
+### Features
+
+* **release:** :rocket: bump version to 1.0.4 to trigger workflow ([8daf898](https://github.com/argilzar/export-parquet/commit/8daf89818ab19b249443bff913c3c3260aeb67ba))
+
+
+### Bug Fixes
+
+* Npm fix ([ce352e3](https://github.com/argilzar/export-parquet/commit/ce352e3c604bc9342b4c7987fbc3e0dfa8934be5))
+
 ## [1.1.0](https://github.com/argilzar/export-parquet/compare/v1.0.1...v1.1.0) (2025-09-02)
 
 
