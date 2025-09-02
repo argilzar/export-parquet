@@ -1,5 +1,3 @@
-// src/commands/export-parquet.ts
-
 import {
 	BaseStreamCommand,
 	STREAM_ARGS,
