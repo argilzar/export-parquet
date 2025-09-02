@@ -18,7 +18,7 @@ export default class ExportParquetStream extends BaseStreamCommand<
 > {
 	static args = STREAM_ARGS;
 
-	static description = "Export data as parquet files";
+	static description = "Export data as parquet file";
 	static examples = [
 		'<%= config.bin %> <%= command.id %> "https://flowcore.io/<org>/<Data Core>/*" -s 1y --no-live',
 	];
