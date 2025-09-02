@@ -71,6 +71,10 @@
       }
     }
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "repository": "flowcore-io/export-parquet",
   "scripts": {
     "dev": "bun run build --watch",
@@ -87,7 +91,12 @@
   "version": "1.0.1",
   "bugs": "https://github.com/flowcore-io/export-parquet/issues",
   "keywords": [
-    "oclif"
+    "oclif",
+    "flowcore",
+    "export",
+    "parquet",
+    "data-export",
+    "cli-plugin"
   ],
   "types": "dist/index.d.ts",
   "exports": "./dist/index.js",
