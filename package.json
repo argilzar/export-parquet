@@ -75,7 +75,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "repository": "flowcore-io/export-parquet",
+  "repository": "argilzar/export-parquet",
   "scripts": {
     "dev": "bun run build --watch",
     "build": "shx rm -rf dist && tsc -b",
