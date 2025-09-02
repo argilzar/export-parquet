@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/argilzar/export-parquet/compare/v1.0.1...v1.1.0) (2025-09-02)
+
+
+### Features
+
+* **package:** :rocket: configure package for public npm publishing ([d96fe2e](https://github.com/argilzar/export-parquet/commit/d96fe2ece4d2a95120f6e638d7099a3e199bbe87))
+* **release:** :rocket: bump version to 1.0.3 for public npm publishing ([ef1f6f5](https://github.com/argilzar/export-parquet/commit/ef1f6f5f5a444a206fb64c909d6e2512c414bbc7))
+
 ## [1.0.1](https://github.com/argilzar/export-parquet/compare/v1.0.0...v1.0.1) (2025-09-02)
 
 
