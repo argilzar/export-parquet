@@ -35,7 +35,7 @@ jobs:
 
       - name: Show package name
         run: 'echo "version ${{ steps.package.outputs.value }}"'
-      - uses: google-github-actions/release-please-action@v4
+      - uses: google-github-actions/release-please-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: node
