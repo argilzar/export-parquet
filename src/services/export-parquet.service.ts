@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Logger } from "@flowcore/cli-plugin-config";
 import type {
 	OutputService,
@@ -160,8 +161,9 @@ export class ExportParquetService implements OutputService {
 
 			// Insert into DuckDB table
 			const stmt = await this.connection.prepare(insertQuery);
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			stmt.bind(values as any); // Type assertion needed for DuckDB compatibility
+
+			// biome-ignore lint/suspicious/noExplicitAny: Type assertion needed for DuckDB compatibility
+			stmt.bind(values as any);
 			await stmt.run();
 			stmt.destroySync();
 
