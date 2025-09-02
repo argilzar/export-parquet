@@ -3,6 +3,9 @@ name: Build and Publish NPM Package
 on:
   release:
     types: [ published ]
+  push:
+    tags:
+      - 'v*'
 
 env:
   NODE_VERSION: ">=18.12.1"
