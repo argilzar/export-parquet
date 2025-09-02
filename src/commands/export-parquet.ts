@@ -27,14 +27,14 @@ export default class ExportParquetStream extends BaseStreamCommand<
 		...STREAM_FLAGS,
 		filename: Flags.string({
 			char: "f",
-			description: "Name of the parquet file",
+			description: "Name or prefix for the parquet files",
 			helpValue: "events",
 			name: "filename",
 			required: false,
 		}),
 		outputDir: Flags.string({
 			char: "o",
-			description: "Output directory for the parquet file",
+			description: "Output directory for the parquet files",
 			helpValue: "./exports",
 			name: "outputDir",
 			required: false,
