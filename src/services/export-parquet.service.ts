@@ -59,7 +59,7 @@ export class ExportParquetService implements OutputService {
 			const filepath = join(this.outputDir, filename);
 
 			// Export to parquet file
-			const exportQuery = `COPY (SELECT * FROM ${this.tableName}) TO '${filepath}' (FORMAT PARQUET)`;
+			const exportQuery = `COPY (SELECT * FROM ${this.tableName}) TO '${filepath}' (FORMAT PARQUET,COMPRESSION GZIP)`;
 
 			await this.connection.run(exportQuery);
 
@@ -235,7 +235,7 @@ export class ExportParquetService implements OutputService {
 		for (const fieldName of newFields) {
 			try {
 				const payloadValue = payload[fieldName];
-				const columnType = this.guessColumnType(payloadValue);
+				const columnType = this.guessColumnType(payloadValue, fieldName);
 
 				// Store the detected column type for future reference
 				this.payloadFieldTypes.set(fieldName, columnType);
@@ -300,7 +300,7 @@ export class ExportParquetService implements OutputService {
 	}
 
 	// Guess the appropriate column type based on the payload value
-	private guessColumnType(value: unknown): string {
+	private guessColumnType(value: unknown, fieldName?: string): string {
 		if (value === null || value === undefined) {
 			return "VARCHAR"; // Default to VARCHAR for null/undefined values
 		}
@@ -315,8 +315,12 @@ export class ExportParquetService implements OutputService {
 		}
 
 		if (typeof value === "number") {
-			// Check if it's a Unix timestamp first
-			if (this.isUnixTimestamp(value)) {
+			// Check if it's a Unix timestamp first, but exclude fields ending with "id"
+			if (
+				fieldName &&
+				!fieldName.toLowerCase().endsWith("id") &&
+				this.isUnixTimestamp(value)
+			) {
 				return "TIMESTAMP";
 			}
 
