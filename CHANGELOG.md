@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/argilzar/export-parquet/compare/v1.3.0...v1.3.1) (2025-01-27)
+
+
+### Bug Fixes
+
+* **package:** :rocket: bump version to 1.3.1 for new release
+
 ## [1.2.4](https://github.com/argilzar/export-parquet/compare/v1.2.3...v1.2.4) (2025-09-03)
 
 
