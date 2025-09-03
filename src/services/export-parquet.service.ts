@@ -59,7 +59,7 @@ export class ExportParquetService implements OutputService {
 			const filepath = join(this.outputDir, filename);
 
 			// Export to parquet file
-			const exportQuery = `COPY (SELECT * FROM ${this.tableName}) TO '${filepath}' (FORMAT PARQUET)`;
+			const exportQuery = `COPY (SELECT * FROM ${this.tableName}) TO '${filepath}' (FORMAT PARQUET,COMPRESSION GZIP)`;
 
 			await this.connection.run(exportQuery);
 
