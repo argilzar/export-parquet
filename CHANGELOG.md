@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.4](https://github.com/argilzar/export-parquet/compare/v1.2.3...v1.2.4) (2025-09-03)
+
+
+### Bug Fixes
+
+* **export-parquet:** :bug: add GZIP compression to parquet file export ([8ed503c](https://github.com/argilzar/export-parquet/commit/8ed503c5b96fd88ba2d6bb008609ca1561c096b2))
+* **export-parquet:** :bug: enhance column type guessing with field name ([496a187](https://github.com/argilzar/export-parquet/commit/496a187658c333f4a4d6c044d6c183b53a540145))
+
 ## [1.2.3](https://github.com/argilzar/export-parquet/compare/v1.2.2...v1.2.3) (2025-09-02)
 
 
