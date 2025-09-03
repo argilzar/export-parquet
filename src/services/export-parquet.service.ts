@@ -326,6 +326,11 @@ export class ExportParquetService implements OutputService {
 
 			// Check if it's an integer
 			if (Number.isInteger(value)) {
+				// ID type fields should default to VARCHAR to preserve exact values
+				if (fieldName?.toLowerCase().endsWith("id")) {
+					return "VARCHAR";
+				}
+
 				// Check if the number exceeds BIGINT limits
 				if (
 					value > Number.MAX_SAFE_INTEGER ||
