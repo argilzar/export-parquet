@@ -324,9 +324,28 @@ export class ExportParquetService implements OutputService {
 				return "TIMESTAMP";
 			}
 
-			// Check if it's an integer or decimal
+			// Check if it's an integer
 			if (Number.isInteger(value)) {
+				// Check if the number exceeds BIGINT limits
+				if (
+					value > Number.MAX_SAFE_INTEGER ||
+					value < Number.MIN_SAFE_INTEGER
+				) {
+					// For extremely large integers, use DECIMAL with high precision
+					// or VARCHAR as fallback for numbers that might exceed DECIMAL limits
+					const valueStr = value.toString();
+					return valueStr.length > 38
+						? "VARCHAR" // If the number is extremely long, use VARCHAR to preserve exact value
+						: "DECIMAL(38,0)"; // Use DECIMAL with appropriate precision for large but manageable numbers
+				}
+
 				return "BIGINT";
+			}
+
+			// For non-integer numbers, check if they exceed DOUBLE precision limits
+			if (Math.abs(value) > Number.MAX_VALUE) {
+				// If the number exceeds JavaScript's MAX_VALUE, use VARCHAR to preserve exact value
+				return "VARCHAR";
 			}
 
 			return "DOUBLE";

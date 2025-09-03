@@ -86,7 +86,11 @@
     "prepare": "yarn run build",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md",
-    "update-schema": "rover graph introspect https://graph.api.flowcore.io/graphql -o schema.gql"
+    "update-schema": "rover graph introspect https://graph.api.flowcore.io/graphql -o schema.gql",
+    "release": "npm run test && npm run lint && npm run build && npm publish",
+    "release:patch": "npm version patch && npm run release",
+    "release:minor": "npm version minor && npm run release",
+    "release:major": "npm version major && npm run release"
   },
   "version": "1.3.1",
   "bugs": "https://github.com/argilzar/export-parquet/issues",
