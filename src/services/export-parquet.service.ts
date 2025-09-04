@@ -11,6 +11,10 @@ import { ux } from "@oclif/core";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 
+// Simple wrapper to make ux.colorize work in non-TTY environments (like Docker)
+const colorize = (color: string, text: string): string =>
+	process.stdout.isTTY ? ux.colorize(color, text) : text;
+
 export class ExportParquetService implements OutputService {
 	private connection: duckdb.DuckDBConnection | null = null;
 	private customFilename?: string;
@@ -47,7 +51,7 @@ export class ExportParquetService implements OutputService {
 			}
 
 			this.logger.info(
-				ux.colorize("blue", `Processing ${this.eventCount} events... 🔄`),
+				colorize("blue", `Processing ${this.eventCount} events... 🔄`),
 			);
 
 			// Create output directory if it doesn't exist
@@ -64,7 +68,7 @@ export class ExportParquetService implements OutputService {
 			await this.connection.run(exportQuery);
 
 			this.logger.info(
-				ux.colorize(
+				colorize(
 					"green",
 					`Export completed! 📊 Exported ${this.eventCount} events to ${filepath}`,
 				),
@@ -171,7 +175,7 @@ export class ExportParquetService implements OutputService {
 
 			if (this.eventCount % 100 === 0) {
 				this.logger.info(
-					ux.colorize("blue", `Processed ${this.eventCount} events... 📈`),
+					colorize("blue", `Processed ${this.eventCount} events... 📈`),
 				);
 			}
 		} catch (error) {
@@ -186,10 +190,7 @@ export class ExportParquetService implements OutputService {
 	async start(): Promise<void> {
 		try {
 			this.logger.info(
-				ux.colorize(
-					"green",
-					"Starting parquet export stream with DuckDB... 📁",
-				),
+				colorize("green", "Starting parquet export stream with DuckDB... 📁"),
 			);
 
 			// Initialize DuckDB
@@ -206,7 +207,7 @@ export class ExportParquetService implements OutputService {
 			await this.connection.run(createTableQuery);
 
 			this.logger.info(
-				ux.colorize("green", "DuckDB initialized and ready for streaming! 🦆"),
+				colorize("green", "DuckDB initialized and ready for streaming! 🦆"),
 			);
 		} catch (error) {
 			this.logger.error(
@@ -244,10 +245,7 @@ export class ExportParquetService implements OutputService {
 				// eslint-disable-next-line no-await-in-loop
 				await this.connection.run(alterQuery);
 				this.logger.info(
-					ux.colorize(
-						"blue",
-						`Added new column: ${fieldName} (${columnType}) 📊`,
-					),
+					colorize("blue", `Added new column: ${fieldName} (${columnType}) 📊`),
 				);
 			} catch (error) {
 				// Column might already exist or be incompatible
@@ -282,7 +280,7 @@ export class ExportParquetService implements OutputService {
 			}
 
 			this.logger.debug(
-				ux.colorize(
+				colorize(
 					"yellow",
 					`Converting Unix timestamp ${value} to ${convertedValue} for field ${fieldName} 🔄`,
 				),
